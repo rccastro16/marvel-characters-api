@@ -11,7 +11,14 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT;
 
+/**
+ * Routes
+ */
 app.use('/characters', charactersRoute);
+
+/**
+ * Error Handler
+ */
 
 app.use((err, _req, res, _next) => {
 	if (err.message === '404') {
@@ -22,6 +29,10 @@ app.use((err, _req, res, _next) => {
 		res.send('Internal server error.');
 	}
 });
+
+/**
+ * Redis event listener
+ */
 
 client.on('connect', () => {
 	console.log('Redis - Connection status: connected');
@@ -35,10 +46,16 @@ client.on('error', function (err) {
 	console.log('Redis - Connection status: error  ' + err);
 });
 
+/**
+ * Swagger Setup
+ */
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerConfig));
 
+/**
+ * App Listener
+ */
 app.listen(port, () => {
 	console.log(`App start on port ${port}...`);
 });
 
-export default app;
+export default app; // Exported for Testing

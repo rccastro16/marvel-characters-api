@@ -23,9 +23,12 @@ export const findAllCharacter = async () => {
 	let callNextPage = true;
 	let offset = 0;
 
+	// While loop to iterate call to the Marvel API with 100 characters limit.
+
 	while (callNextPage) {
 		const result = await getCharacters(offset);
 
+		// Checks if redis is available and there is a cached result.
 		const cachedResult =
 			client.connected && offset === 0
 				? await getRedisAsync('characters')
@@ -34,6 +37,10 @@ export const findAllCharacter = async () => {
 		if (cachedResult) {
 			const currentTotalCharacters = result.total;
 			const parsedCachedResult = JSON.parse(cachedResult);
+
+			// Checks whether the current cached result matches the total count of characters in the API,
+			// if so return the cached results and break from the loop.
+
 			if (currentTotalCharacters === parsedCachedResult.total) {
 				if (parsedCachedResult.results) {
 					for (
@@ -57,17 +64,14 @@ export const findAllCharacter = async () => {
 		if (offset < result.total) {
 			offset += 100;
 		} else {
-			console.log(client.connected);
+			// On the last iteration, capture the characters and save to Redis. (if redis is available).
 			if (client.connected) {
 				const charactersData = {
 					total: result.total,
 					results: marvelCharacters,
 				};
-				console.log('SAVE to REDIS');
 				client.set('characters', JSON.stringify(charactersData));
 			}
-
-			console.log('FROM API');
 			callNextPage = false;
 		}
 	}

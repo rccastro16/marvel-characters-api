@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import request from 'supertest';
 
-import app from '../app.js';
+import app from '../../app.js';
 
 describe('GET /characters/{id}', () => {
 	it('OK - Get character data', (done) => {
@@ -16,7 +16,6 @@ describe('GET /characters/{id}', () => {
 				done();
 			});
 	});
-
 	it('Not Found - No character found', (done) => {
 		request(app)
 			.get('/characters/9189')
@@ -28,7 +27,6 @@ describe('GET /characters/{id}', () => {
 			});
 	});
 });
-
 describe('GET /characters/', () => {
 	it('OK - Get all characters data', (done) => {
 		request(app)
@@ -39,5 +37,5 @@ describe('GET /characters/', () => {
 				expect(body).to.be.an('array');
 				done();
 			});
-	}).timeout(50000);
+	}).timeout(40000);
 });
